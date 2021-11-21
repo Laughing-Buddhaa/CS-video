@@ -1,0 +1,90 @@
+import numpy as np
+import random
+import math
+from sklearn.linear_model import LinearRegression as lr
+import matplotlib.pyplot as plt
+
+
+X_a = []                             # Declaring X cordinates list
+for i in range (1, 101):
+    n=random.randint(1,101)          # Generating random integers between 1 to 101
+    X_a.append(n)                    # Inserting the integers in the list
+
+
+m=1/math.sqrt(3)
+print(m)
+    
+Y_a = []                             # Declaring Y cordinates list
+for i in range (1, 101):
+    n1=m * X_a[i-1]
+    c=random.uniform(1, 10)
+    n2=n1+c      
+    Y_a.append(n2)
+    
+X_a=np.array(X_a)                    # Reshaping X_a to a 2D array of size (100,1)
+X_a=np.reshape(X_a,(100,1))
+    
+Y_a=np.array(Y_a)    
+Y_a=np.reshape(Y_a,(100,1))          #Reshaping Y_a to a 2D array of size (100,1)
+
+print(X_a)
+print(Y_a)
+
+
+
+
+#%%
+
+Cost=999999 
+TA=0
+m=0
+c=0
+alpha=0.0001
+Y_PredGD = []
+for i in range (1,101):
+    Y_PredGD.append(m*X_a[i-1][0]+c)
+    
+for i in range (1,101):
+    TA=TA+(Y_a[i-1][0]-Y_PredGD[i-1])**2
+    
+Prev_Cost=TA/len(X_a)
+
+    
+while abs(Prev_Cost-Cost)>0.00001:
+    Prev_Cost=Cost
+    TA=0
+    dCost_m=0
+    dCost_c=0
+    Total_Cost_m=0
+    Total_Cost_c=0
+    
+    for i in range (1,101):
+        Total_Cost_m=Total_Cost_m+(X_a[i-1][0]*(Y_PredGD[i-1]-Y_a[i-1][0]))
+    dCost_m=2*Total_Cost_m/len(X_a)
+    
+    
+    for i in range (1,101):
+        Total_Cost_c=Total_Cost_c+(Y_PredGD[i-1]-Y_a[i-1][0])
+    dCost_c=2*Total_Cost_c/len(X_a)
+    
+    
+    m=m-(alpha*dCost_m)
+
+    c=c-(alpha*dCost_c)
+
+    
+    for i in range (1,101):
+        Y_PredGD[i-1]=m*X_a[i-1][0]+c
+        
+    for i in range (1,101):
+        TA=TA+(Y_a[i-1][0]-Y_PredGD[i-1])**2
+        
+    Cost=TA/len(X_a)
+print(Cost)
+
+plt.scatter(X_a,Y_a, s=5,color='b')
+plt.xlabel('X axis')
+plt.ylabel('Y axis')
+plt.title('Batch Gradient Descent')
+plt.plot(X_a,Y_PredGD, color='r')
+plt.show()
